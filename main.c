@@ -13,7 +13,25 @@ struct stats_t
     int min;
 };
 
-//toto je zmena
+/*
+ * function used primarily to directly save statistics data of password
+ */
+struct stats_t storeData(struct stats_t stats_t, char* str, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        // set the position corresponding to the ASCII value of str[i] in int array to 1
+        stats_t.unique[(size_t)str[i]] = 1; // use the recasted char value to index in int array
+    }
+
+    stats_t.total += len; // adds length of password to total for calculating the average length of passwords
+    stats_t.count++; // increments count by every password for calculating the average length of passwords
+
+    // compares length of current password and the last found password with minimum chars
+    if ((int)len < stats_t.min) {
+        stats_t.min = len; // sets new minimum value
+    }
+
+    return stats_t;
+}
 
 /*
  * my own implementation function similar to strlen() from <string.h>
@@ -175,8 +193,8 @@ bool level_3(const char* str, unsigned int par)  {
 }
 
 int level_4(const char *str, size_t par) {
-//  If the param is bigger than length of str, then we can't create a substring with length of param.
-//  So the function returns false.
+    // if the param > length of str, then we can't create a substring with length of param and the function returns false as it
+    // didn't find any repeating substring
     size_t len = my_strlen(str) - 1;    // todo why there is -1?
 
     if (par > len)  {
@@ -225,21 +243,6 @@ bool filter1(char* str, unsigned int param, size_t i) {
         return false;
 }
 
-struct stats_t storeData(struct stats_t stats_t, char* str, size_t len) {
-    for (size_t i = 0; i < len; i++) {
-        // set the position corresponding to the ASCII value
-        // of str[i] in hash[] to 1
-        stats_t.unique[(size_t) str[i]] = 1;
-    }
-
-    stats_t.total += len;                   //  Add strlen of pw to total
-    stats_t.count++;
-    if ((int)len < stats_t.min) {
-        stats_t.min = len;
-    }
-
-    return stats_t;
-}
 
 /*
  * function checks whether the 3rd argument is of length 7 as the word "--stats" has 7 characters
@@ -264,37 +267,48 @@ bool checkStats(const char* str, const char* stats)    {
 }
 
 /*
+ * unnecessary part of code, which checks whether the inputted arguments are valid
+ * the project assignment tells about executing program with fixed input arguments where level is in
+   range [1, 4] and param as any positive number
+ * program returns true if any of the invalid data is found
+ */
+bool checkValidArgs(int argc, char** argv)  {
+    // maximum amount of args: 4 (./pwcheck lvl param [--stats])
+    if ((argc < 2) || (argc > 4))   {
+        printError(1);
+        return true;
+    }
+
+    // get entered arguments and recast them to int, so we can use them later
+    char* endptr; // temp variable to identificate any letters in arguments
+    const unsigned int N_LVL = strtol(argv[1], &endptr, 10);
+
+    // if there is unwanted chars in endptr, end the program with error msg
+    // if the level is out of range, end the program with error msg
+    if (*endptr || (N_LVL > 4 || N_LVL < 1))    {
+        printError(1);
+        return true;
+    }
+
+    const unsigned int N_PAR = strtol(argv[2], &endptr, 10);
+    if (*endptr || N_PAR == 0) {
+        printError(1);
+        return true;
+    }
+
+}
+
+/*
  * as the assignment says, the program is always ran with 2 entered arguments of lvl, param + opt. [--stats]
  * it includes checking for invalid input such as unexpected characters in arguments (lvl, param don't have
    any letters, [--stats] must have only those specific characters)
  *
  */
-int main(int argc, char *argv[])    {
-    // maximum amount of args: 4 (./pwcheck lvl param [--stats])
-    if ((argc < 2) || (argc > 4))   {
-        printError(1);
-        return EXIT_FAILURE;
-    }
-
-//  Get entered arguments and recast them to int, so we can use them later
-    char* endptr;
-
-    // cast lvl argument to integer value and throw any other letters in trash (endptr)
-    const unsigned int N_LVL = strtol(argv[1], &endptr, 10);
-    // if something is in endptr, the program ends with error message of invalid input
-    // if the entered level is out of range [1, 4], the program ends with error message of invalid input
-    if (*endptr || (N_LVL > 4 || N_LVL < 1))    {
-        printError(1);
-        return EXIT_FAILURE;
-    }
-
-    // the same situation as in line 276, but the program expects only positive parameter
-    // todo maybe remove the 'n_par == 0' statement
-    const unsigned int N_PAR = strtol(argv[2], &endptr, 10);
-    if (*endptr || N_PAR == 0) {
-        printError(1);
-        return EXIT_FAILURE;
-    }
+int main(int argc, char** argv)    {
+    // not needed for project, but I am using it for my own needs
+//    if(checkValidArgs(argc, argv))  {
+//        return EXIT_FAILURE;
+//    }
 
     // holds the value for the [--stats] argument
     bool stats = false;
@@ -322,19 +336,6 @@ int main(int argc, char *argv[])    {
             return EXIT_FAILURE;
         }
 
-        // todo osetrenie prilis velkeho vstupu
-//        char name[MY_BUFSIZE + 2];
-//        if (fgets(name, sizeof name, stdin)) {
-//            if (strlen(name) >= MY_BUFSIZE)
-//              Too_long_error();
-//
-            // check for length of password whether it has less than 101 chars
-//        printf("%c\n", pw[MAX_CHARS+1]);
-        // todo change it
-//        if (pw[101] != '\0')    {
-//            printError(2);
-//            return EXIT_FAILURE;
-//        }
         if (length > MAX_CHARS) {
             printError(2);
             return EXIT_FAILURE;
