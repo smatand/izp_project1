@@ -306,9 +306,9 @@ bool checkValidArgs(int argc, char** argv)  {
  */
 int main(int argc, char** argv)    {
     // not needed for project, but I am using it for my own needs
-//    if(checkValidArgs(argc, argv))  {
-//        return EXIT_FAILURE;
-//    }
+    if(checkValidArgs(argc, argv))  {
+        return EXIT_FAILURE;
+    }
 
     // holds the value for the [--stats] argument
     bool stats = false;
