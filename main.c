@@ -272,7 +272,7 @@ bool checkStats(const char* str, const char* stats)    {
    range [1, 4] and param as any positive number
  * program returns true if any of the invalid data is found
  */
-bool checkValidArgs(int argc, char** argv)  {
+bool checkValidArgs(int argc, char** argv, int* n_lvl, int* n_param)  {
     // maximum amount of args: 4 (./pwcheck lvl param [--stats])
     if ((argc < 2) || (argc > 4))   {
         printError(1);
@@ -281,17 +281,18 @@ bool checkValidArgs(int argc, char** argv)  {
 
     // get entered arguments and recast them to int, so we can use them later
     char* endptr; // temp variable to identificate any letters in arguments
-    const unsigned int N_LVL = strtol(argv[1], &endptr, 10);
+
+    n_lvl = strtol(argv[1], &endptr, 10);
 
     // if there is unwanted chars in endptr, end the program with error msg
     // if the level is out of range, end the program with error msg
-    if (*endptr || (N_LVL > 4 || N_LVL < 1))    {
+    if (*endptr || (n_lvl > 4 || n_lvl < 1))    {
         printError(1);
         return true;
     }
 
-    const unsigned int N_PAR = strtol(argv[2], &endptr, 10);
-    if (*endptr || N_PAR == 0) {
+    n_param = strtol(argv[2], &endptr, 10);
+    if (*endptr || n_param == 0) {
         printError(1);
         return true;
     }
@@ -305,10 +306,12 @@ bool checkValidArgs(int argc, char** argv)  {
  *
  */
 int main(int argc, char** argv)    {
+    int n_lvl = 0, n_param = 0;
+
     // not needed for project, but I am using it for my own needs
-//    if(checkValidArgs(argc, argv))  {
-//        return EXIT_FAILURE;
-//    }
+    if(checkValidArgs(argc, argv, &n_lvl, &n_param))  {
+        return EXIT_FAILURE;
+    }
 
     // holds the value for the [--stats] argument
     bool stats = false;
