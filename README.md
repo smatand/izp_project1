@@ -1,4 +1,4 @@
-### IZP - Project 1 - password filter
+### IZP - Project 1 (Password filter)
 
 [Project assignment (in CZ)](https://github.com/smatand/izp1_projekt/blob/master/izp_projekt1.pdf)
 
