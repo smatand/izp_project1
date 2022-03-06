@@ -4,8 +4,8 @@
 
 My very first school project created in language C (without bonus assignment).  
 
-Compile with`gcc -std=c99 -Wall -Wextra -Werror pwcheck.c -o pwcheck`  
-Run the program `./pwcheck LEVEL PARAM [--stats]`
+Compile with`gcc -std=c99 -Wall -Wextra -Werror pwcheck.c -o pwcheck`    
+Run the program `./pwcheck LEVEL PARAM [--stats]`  
 Run the tests `./test.py pwcheck` (credits goes to [Josef Kuchar](https://github.com/JosefKuchar))  
 
 **Result:** 9.6/10  
